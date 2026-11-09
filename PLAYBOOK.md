@@ -4,8 +4,6 @@ schema: 2
 title: Write a book
 icon: book.closed
 pitch: A book manuscript you write with help: see it as printed pages, keep the chapters moving, and export it as an ebook or a Word manuscript.
-animal: owl
-colors: 7a4a2a, ffd27a
 crew: coder
 page_file: manuscript/chapters/{page}.md
 pages: /, /desk, /notes

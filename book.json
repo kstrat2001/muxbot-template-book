@@ -1,0 +1,25 @@
+{
+  "title": "Untitled",
+  "subtitle": "",
+  "author": "Your Name",
+  "language": "en",
+  "edition": "First edition",
+  "year": 2026,
+  "publisher": "",
+  "isbn": {
+    "ebook": "",
+    "paperback": "",
+    "hardcover": ""
+  },
+  "description": "",
+  "keywords": [],
+  "cover": "",
+  "trim": "6x9",
+  "word_goal": 60000,
+  "rights": "All rights reserved. No part of this book may be reproduced in any form without written permission from the author, except for brief quotations in reviews.",
+  "disclaimer": "",
+  "credits": [],
+  "front": ["dedication"],
+  "chapters": ["01-chapter-one"],
+  "back": ["acknowledgments", "about-the-author"]
+}

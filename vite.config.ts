@@ -14,7 +14,9 @@ export default defineConfig({
     host,
     port,
     strictPort: Boolean(process.env.PORT),
-    // Live reload on its own port, on the same host as the site.
-    hmr: hmrPort ? { host, port: hmrPort } : undefined,
+    // Live reload on its own port. The browser connects to it on the page's
+    // own host: the server may listen on 0.0.0.0 (darkmux runs previews in
+    // a container and publishes the ports on 127.0.0.1).
+    hmr: hmrPort ? { port: hmrPort, clientPort: hmrPort } : undefined,
   },
 })

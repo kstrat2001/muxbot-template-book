@@ -22,7 +22,7 @@ npm run dev
 
 Open http://127.0.0.1:5173.
 
-- **Book** (`/`): the book as pages at its trim size, with a title page, copyright page and contents built from `book.json`. Print it (the Print button, then Save as PDF) for a PDF with a page number on each page.
+- **Book** (`/`): the book as pages you turn, at its trim size: a cover, then a title page, copyright page and contents built from `book.json`, then the manuscript with running heads and page numbers. Two facing pages on a wide screen, one on a narrow one; the arrow keys, the buttons under the pages or a swipe turn them. Print it (the Print button, then Save as PDF) for a PDF with a page number on each page.
 - **Ebook** (`/ebook`): the same text reflowed, as an e-reader shows it.
 - **Desk** (`/desk`): each piece's status, who drafted it, its words and open `[TK]` placeholders, with a word goal and anything wrong with the files.
 - **Notes** (`/notes`): everything in `notes/`.
@@ -35,11 +35,13 @@ Open http://127.0.0.1:5173.
 - `manuscript/front/`, `manuscript/chapters/`, `manuscript/back/`: one Markdown file per piece, each starting with front matter: `title`, `status` (idea, draft, revised, final), `drafted_by` (author, bot, mixed) and, for chapters in parts, `part`.
 - `notes/`: the outline, the style sheet, chapter summaries and anything else the book needs.
 - `public/images/`: pictures, placed in the text as `![alt text](/images/name.png "caption")`.
-- `src/styles.css`: the book's look; the typography is the variables at the top.
+- `src/styles.css`: the book's look, as variables: fonts, text size, paper, ink, accent and cover colors. The rules are in `src/styles/`: `book.css` (the text), `pages.css` (the pages, cover and print) and `app.css` (the bar, Desk and Notes).
+- `src/fonts/`: EB Garamond, the book's font, bundled so the preview works offline (SIL Open Font License, `OFL.txt`).
+- `src/views/`: `BookView.tsx` and `BookContent.tsx` (what is on the pages), `Pager.tsx` (counting and turning them), `DeskView.tsx` and `NotesView.tsx`.
 - `scripts/export.ts`: the EPUB and Word exports.
 
-The PDF from the browser has page numbers, but the contents page has none yet; a paged layout engine is planned for that.
+On screen the contents page shows each piece's page. The PDF from the browser has page numbers, but its contents page has none yet; a paged layout engine is planned for that.
 
 ## License
 
-MIT
+MIT. The bundled font, EB Garamond, is under the SIL Open Font License 1.1 (`src/fonts/OFL.txt`).

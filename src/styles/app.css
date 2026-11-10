@@ -1,0 +1,95 @@
+/* The app around the book: the bar above every view, the Desk and Notes.
+   Kept quiet on purpose, so the writing is what you look at. */
+
+:root { --bar-h: 50px; }
+
+/* ---------- The bar ---------- */
+
+.bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; gap: 4px; height: var(--bar-h); padding: 0 clamp(12px, 3vw, 28px); background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.bar-title { flex: 1 1 0; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--text); font-family: var(--font-display); font-size: 19px; font-style: italic; text-decoration: none; }
+.bar-views { display: flex; }
+.bar-views a, .bar button { padding: 6px 10px; border: 0; border-radius: 6px; background: none; color: var(--muted); font: inherit; font-size: 17px; font-variant-caps: all-small-caps; letter-spacing: 0.1em; text-decoration: none; cursor: pointer; }
+.bar-views a:hover, .bar button:hover { color: var(--text); }
+.bar-views a[aria-current='page'] { color: var(--text); text-decoration: underline; text-decoration-color: var(--link); text-decoration-thickness: 1.5px; text-underline-offset: 0.42em; }
+.bar-side { flex: 1 1 0; display: flex; justify-content: flex-end; }
+@media (max-width: 640px) {
+  .bar-side { display: none; }
+  .bar-views a { padding: 6px 7px; }
+}
+
+.empty { padding: 20vh 16px; text-align: center; color: var(--muted); font-style: italic; }
+
+/* ---------- The Desk and Notes share a page shape ---------- */
+
+.desk, .notes { max-width: 860px; margin: 0 auto; padding: clamp(28px, 6vw, 64px) clamp(16px, 4vw, 32px) 96px; font-variant-numeric: lining-nums; }
+.sheet-head { margin-bottom: clamp(28px, 5vw, 48px); }
+.sheet-head .caps { margin: 0 0 6px; color: var(--muted); font-size: 16px; }
+.sheet-head h1 { margin: 0; font-family: var(--font-display); font-size: clamp(30px, 5vw, 42px); font-weight: 400; line-height: 1.1; text-wrap: balance; }
+.sheet-head .byline { margin: 6px 0 0; color: var(--muted); font-style: italic; }
+
+/* ---------- The Desk ---------- */
+
+/* How far along: words written, a hairline that fills toward the goal, open placeholders. */
+.totals { display: grid; grid-template-columns: 1fr auto; gap: 10px 32px; align-items: end; margin-bottom: 40px; }
+.totals p { margin: 0; color: var(--muted); }
+.totals strong { color: var(--text); font-family: var(--font-display); font-size: 32px; font-weight: 400; line-height: 1; margin-right: 0.15em; }
+.totals .open-tks { text-align: right; }
+.goal { grid-column: 1 / -1; height: 3px; border-radius: 2px; background: var(--line); overflow: hidden; }
+.goal span { display: block; height: 100%; min-width: 3px; background: var(--link); border-radius: 2px; }
+
+/* Something wrong with the files: said plainly, in the margin's color. */
+.problems { margin: 0 0 40px; padding: 14px 18px 14px 20px; border-left: 2px solid var(--link); background: color-mix(in srgb, var(--link) 7%, transparent); list-style: none; }
+.problems li + li { margin-top: 6px; }
+
+.desk table { width: 100%; border-collapse: collapse; }
+.desk th, .desk td { padding: 11px 12px 11px 0; text-align: left; vertical-align: baseline; }
+.desk :is(th, td):last-child { padding-right: 0; }
+.desk thead th { padding-bottom: 8px; border-bottom: 1px solid var(--text); color: var(--muted); font-size: 15.5px; font-weight: 400; font-variant-caps: all-small-caps; letter-spacing: 0.1em; }
+.desk tbody th[colspan] { padding: 30px 0 6px; color: var(--muted); font-style: italic; font-weight: 400; }
+.desk tbody tr + tr td { border-top: 1px solid var(--line); }
+.desk td.piece-name a { color: var(--text); font-size: 20px; text-decoration: none; }
+.desk td.piece-name a:hover { text-decoration: underline; text-decoration-color: var(--link); }
+.desk td.piece-name small { display: block; margin-top: 1px; color: var(--muted); font-size: 14.5px; letter-spacing: 0.01em; overflow-wrap: anywhere; }
+.desk td.chapter-no { width: 2.2em; color: var(--link); font-size: 20px; font-variant-numeric: oldstyle-nums; }
+.desk .num { text-align: right; font-variant-numeric: lining-nums tabular-nums; white-space: nowrap; }
+.desk td.quiet { color: var(--muted); }
+.desk .tk-count { display: inline-block; min-width: 1.5em; padding: 0 0.35em; border-radius: 3px; background: var(--tk); color: #2a2418; text-align: center; }
+
+/* Status: four steps from idea to final, filled as far as the piece has come. */
+.status { display: inline-flex; align-items: center; gap: 9px; white-space: nowrap; }
+.status .steps { display: inline-flex; gap: 3px; }
+.status .steps i { width: 6px; height: 6px; border-radius: 50%; border: 1px solid var(--muted); }
+.status .steps i.done { background: var(--text); border-color: var(--text); }
+.status.final .steps i.done { background: var(--link); border-color: var(--link); }
+
+@media (max-width: 640px) {
+  .desk .wide { display: none; }
+  .desk td.chapter-no { width: 1.6em; }
+  .status .label { display: none; }
+}
+
+/* ---------- Notes ---------- */
+
+.notes { display: grid; grid-template-columns: 170px minmax(0, 1fr); gap: 0 clamp(24px, 5vw, 56px); max-width: 940px; }
+.notes .sheet-head { grid-column: 1 / -1; }
+.note-index { position: sticky; top: calc(var(--bar-h) + 28px); align-self: start; display: flex; flex-direction: column; gap: 2px; padding-top: 4px; }
+.note-index a { padding: 4px 0; color: var(--muted); text-decoration: none; }
+.note-index a::first-letter { text-transform: uppercase; }
+.note-index a:hover { color: var(--text); }
+.note { padding: 0 0 44px; margin-bottom: 44px; border-bottom: 1px solid var(--line); font-size: 19px; line-height: 1.5; scroll-margin-top: calc(var(--bar-h) + 28px); overflow-wrap: break-word; }
+.note:last-child { border-bottom: 0; }
+.note-file { margin: 0 0 14px; color: var(--muted); font-size: 15.5px; }
+.note h1 { margin: 0 0 0.5em; font-family: var(--font-display); font-size: 28px; font-weight: 400; line-height: 1.15; }
+.note h2 { margin: 1.6em 0 0.3em; font-size: 16.5px; font-weight: 400; font-variant-caps: all-small-caps; letter-spacing: 0.1em; color: var(--muted); padding-bottom: 5px; border-bottom: 1px solid var(--line); }
+.note h3 { margin: 1.3em 0 0.2em; font-size: 1em; font-style: italic; font-weight: 400; }
+.note p { margin: 0 0 0.7em; }
+.note :is(ul, ol) { margin: 0 0 0.7em; padding-left: 1.3em; }
+.note li { margin: 0.2em 0; }
+.note li::marker { color: var(--muted); }
+.note blockquote { margin: 1em 0; padding-left: 1em; border-left: 2px solid var(--line); font-style: italic; }
+.note code { font-size: 0.82em; }
+.note mark.tk { color: #2a2418; }
+@media (max-width: 720px) {
+  .notes { display: block; }
+  .note-index { position: static; flex-direction: row; flex-wrap: wrap; gap: 0 18px; margin-bottom: 32px; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+}

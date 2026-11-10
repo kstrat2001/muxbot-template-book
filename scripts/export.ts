@@ -38,21 +38,31 @@ const esc = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').
 
 const MEDIA_TYPES: Record<string, string> = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.gif': 'image/gif', '.svg': 'image/svg+xml', '.webp': 'image/webp' }
 
-const EPUB_CSS = `body { font-family: serif; line-height: 1.5; margin: 0 5%; }
-h1 { font-weight: normal; text-align: center; margin: 2em 0 1.5em; }
-.chapter-number { text-align: center; letter-spacing: 0.15em; margin: 2em 0 0; }
-p { margin: 0; text-indent: 1.5em; text-align: justify; }
+// The ebook's look, kept close to the Book view (src/styles/book.css). E-readers
+// bring their own fonts and sizes, so this only sets proportions and spacing.
+const EPUB_CSS = `body { font-family: serif; line-height: 1.4; margin: 0 5%; }
+h1 { font-weight: normal; font-size: 1.6em; line-height: 1.15; text-align: center; margin: 3em 0 2em; }
+h2 { font-weight: normal; font-style: italic; font-size: 1.1em; margin: 1.4em 0 0.7em; }
+h3 { font-weight: normal; font-size: 1em; font-variant: small-caps; letter-spacing: 0.08em; margin: 1.4em 0 0; }
+.chapter-number { text-align: center; text-indent: 0; font-size: 2em; line-height: 1; margin: 2.5em 0 0; }
+.chapter-number + h1 { margin-top: 0.4em; }
+p { margin: 0; text-indent: 1.3em; text-align: justify; }
 h1 + p, h2 + p, h3 + p, hr + p, blockquote + p, figure + p, .no-indent { text-indent: 0; }
-hr { border: 0; margin: 1em 0; text-align: center; }
-hr::after { content: '* * *'; }
-blockquote { margin: 1em 1.5em; }
+hr { border: 0; margin: 1.4em 0; text-align: center; }
+hr::after { content: '*\\2003*\\2003*'; }
+blockquote { margin: 1.4em 0 1.4em 1.3em; font-size: 0.94em; }
+blockquote p { text-indent: 0; }
 figure { margin: 1.5em 0; text-align: center; }
 img { max-width: 100%; }
-figcaption { font-size: 0.85em; }
+figcaption { font-size: 0.85em; font-style: italic; }
 .title-page, .half-title, .part { text-align: center; }
-.title-page .subtitle { font-style: italic; }
+.title-page h1 { font-size: 2.4em; margin-top: 3.5em; margin-bottom: 0.5em; }
+.title-page p { text-align: center; text-indent: 0; margin-top: 1.2em; font-variant: small-caps; letter-spacing: 0.12em; }
+.title-page .subtitle { font-style: italic; font-variant: normal; letter-spacing: 0; font-size: 1.2em; margin-top: 0; }
+.part h1 { font-variant: small-caps; letter-spacing: 0.14em; margin-top: 6em; }
 .copyright p { text-indent: 0; font-size: 0.85em; margin-bottom: 0.75em; text-align: left; }
 nav ol { list-style: none; padding: 0; }
+nav li { margin: 0.4em 0; }
 mark.tk { background: none; }
 `
 

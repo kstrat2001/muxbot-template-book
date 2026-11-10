@@ -1,0 +1,107 @@
+/* The page-turning Book view: the paper, the margins, the running heads, the
+   cover, and the buttons under the pages. Then print. The text itself is in
+   book.css. src/views/Pager.tsx counts the pages this file lays out. */
+
+@media screen {
+  .book.paged { display: flex; flex-direction: column; height: calc(100dvh - var(--bar-h)); background: var(--room); overflow: hidden; }
+
+  /* The stage is the space the pages may fill. Everything on a page is sized
+     from the page's width, so the layout is the same at any size. */
+  .stage { flex: 1; min-height: 0; margin: clamp(10px, 2.5vh, 28px) clamp(12px, 3vw, 40px) 0; container-type: size; display: grid; place-items: center; }
+  .spread {
+    --pages: 1;
+    --page-h: min(100cqh, 100cqw * var(--trim-h) / var(--trim-w));
+    --page-w: calc(var(--page-h) * var(--trim-w) / var(--trim-h));
+    /* Margins, as parts of the page width: top, inside (the spine), outside, bottom. */
+    --m-top: calc(var(--page-w) * 0.125);
+    --m-in: calc(var(--page-w) * 0.105);
+    --m-out: calc(var(--page-w) * 0.105);
+    --m-bot: calc(var(--page-w) * 0.14);
+    --text-w: calc(var(--page-w) - var(--m-in) - var(--m-out));
+    --block-h: calc(var(--page-h) - var(--m-top) - var(--m-bot));
+    --step: calc(var(--text-w) + 2 * var(--m-in)); /* from one page's text to the next */
+    position: relative;
+    width: calc(var(--page-w) * var(--pages));
+    height: var(--page-h);
+    /* A 6 inch page at 12 point, never smaller than is comfortable on a screen. */
+    font-size: calc(max(15.5px, var(--page-w) / 35) * var(--text-scale));
+  }
+  /* Two facing pages when there is room for them. */
+  @container (min-width: 900px) and (min-aspect-ratio: 1/1) {
+    .spread { --pages: 2; --page-h: min(100cqh, 50cqw * var(--trim-h) / var(--trim-w)); --m-top: calc(var(--page-w) * 0.135); --m-in: calc(var(--page-w) * 0.115); --m-out: calc(var(--page-w) * 0.14); --m-bot: calc(var(--page-w) * 0.155); }
+  }
+  /* On a phone the page fills the screen, like a pocket paperback, so the text stays a readable size. */
+  @container (max-width: 520px) {
+    .spread { --page-w: 100cqw; --page-h: min(100cqh, 172cqw); --m-in: calc(var(--page-w) * 0.085); --m-out: calc(var(--page-w) * 0.085); --m-bot: calc(var(--page-w) * 0.15); font-size: calc(16.5px * var(--text-scale)); }
+  }
+
+  /* The paper. */
+  .leaf { position: absolute; top: 0; left: 0; width: var(--page-w); height: var(--page-h); background: var(--paper); color: var(--ink-soft); box-shadow: 0 1px 2px rgb(0 0 0 / 0.1), 0 18px 40px -18px rgb(0 0 0 / 0.35); }
+  @container (min-width: 900px) and (min-aspect-ratio: 1/1) {
+    .leaf.recto { left: var(--page-w); }
+    /* The fold: a soft shadow into the spine on each page. */
+    .leaf.verso { background-image: linear-gradient(to left, rgb(60 40 20 / 0.13), rgb(60 40 20 / 0.03) 5%, transparent 14%); }
+    .leaf.recto { background-image: linear-gradient(to right, rgb(60 40 20 / 0.13), rgb(60 40 20 / 0.03) 5%, transparent 14%); }
+    .leaf.endpaper { background: color-mix(in srgb, var(--cover) 28%, var(--paper)); background-image: linear-gradient(to left, rgb(60 40 20 / 0.13), transparent 12%); } /* the inside of the cover */
+    .no-cover .leaf.endpaper { visibility: hidden; }
+  }
+
+  /* Running head: the book's title on the left page, the chapter's on the right, page number outside. */
+  .running-head, .foot-folio { position: absolute; left: var(--m-out); right: var(--m-out); margin: 0; font-family: var(--font-body); font-size: 0.82em; line-height: 1; font-variant-numeric: oldstyle-nums; }
+  .running-head { top: calc(var(--m-top) * 0.52); display: flex; flex-direction: row-reverse; justify-content: space-between; align-items: baseline; gap: 1em; }
+  .running-head .caps { flex: 1; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .running-head .folio { flex: 0 0 2.5em; }
+  .running-head::after { content: ''; flex: 0 0 2.5em; }
+  .leaf.verso .running-head { flex-direction: row; }
+  .leaf.recto .running-head .folio { text-align: right; }
+  .foot-folio { bottom: calc(var(--m-bot) * 0.42); text-align: center; }
+
+  /* The window shows the text of the pages that are open; the flow behind it
+     is the whole book, cut into page-sized columns and slid sideways. */
+  .window { position: absolute; top: var(--m-top); left: calc(var(--m-out) - 8px); width: calc(var(--pages) * var(--step) - 2 * var(--m-in) + 16px); height: var(--block-h); padding: 0 8px; overflow: hidden; overflow: clip; } /* 8px of slack each side, so a very long book's rounding never clips a letter */
+  .flow { height: 100%; column-count: var(--pages); column-gap: calc(2 * var(--m-in)); column-fill: auto; transform: translateX(calc(var(--shift, 0) * -1 * var(--step))); }
+  .flow .leaf-section { break-before: column; }
+  .flow .leaf-section:first-child { break-before: auto; }
+  .flow .built { height: 100%; break-inside: avoid; }
+  .flow .blank { height: 100%; break-before: column; }
+  .flow .blank[hidden] { display: none; }
+  .flow figure img, .flow .text img { max-height: calc(var(--block-h) * 0.78); object-fit: contain; }
+
+  /* The cover: the book closed. */
+  .spread.closed .window { visibility: hidden; }
+  .cover { position: absolute; top: 0; left: calc(50% - var(--page-w) / 2); width: var(--page-w); height: var(--page-h); border-radius: 2px 5px 5px 2px; background: var(--cover); color: var(--cover-ink); object-fit: cover; box-shadow: inset 0.5em 0 0.6em -0.4em rgb(0 0 0 / 0.45), inset 0.95em 0 0 -0.88em rgb(255 255 255 / 0.12), 0 1px 2px rgb(0 0 0 / 0.2), 0 24px 48px -20px rgb(0 0 0 / 0.5); }
+  .cover-frame { position: absolute; inset: 7.5%; inset-inline-start: 9.5%; display: flex; flex-direction: column; align-items: center; padding: 22% 9% 9%; text-align: center; border: 1px solid color-mix(in srgb, var(--cover-ink) 55%, transparent); outline: 1px solid color-mix(in srgb, var(--cover-ink) 30%, transparent); outline-offset: -0.5em; font-family: var(--font-display); }
+  .cover p { margin: 0; text-wrap: balance; }
+  .cover-title { font-size: 2.5em; line-height: 1.08; letter-spacing: 0.01em; }
+  .cover-subtitle { margin-top: 0.8em !important; font-size: 1.15em; font-style: italic; }
+  .cover .ornament { margin-top: 2em; color: inherit; opacity: 0.8; }
+  .cover-author { margin-top: auto !important; font-size: 1.15em; font-variant-caps: all-small-caps; letter-spacing: 0.16em; }
+
+  /* Under the pages: back, where you are, forward. */
+  .turner { flex: none; display: flex; justify-content: center; align-items: center; gap: 6px; height: 52px; padding: 0 12px; color: var(--muted); font-family: var(--font-ui); font-size: 16px; }
+  .turner button { display: grid; place-items: center; width: 36px; height: 36px; padding: 0; border: 0; border-radius: 50%; background: none; color: var(--text); cursor: pointer; }
+  .turner button:hover:not(:disabled) { background: color-mix(in srgb, var(--text) 9%, transparent); }
+  .turner button:disabled { opacity: 0.28; cursor: default; }
+  .turner select { max-width: 42vw; padding: 5px 4px; border: 0; border-radius: 6px; background: none; color: var(--text); font: inherit; font-style: italic; text-align: right; text-align-last: right; text-overflow: ellipsis; cursor: pointer; appearance: none; -webkit-appearance: none; }
+  .turner select:hover { background: color-mix(in srgb, var(--text) 9%, transparent); }
+  .turner option { font-style: normal; color: initial; }
+  .turner .count { min-width: 5.5em; padding-left: 10px; border-left: 1px solid var(--line); font-variant-numeric: lining-nums tabular-nums; white-space: nowrap; }
+}
+
+/* ---------- Print: Print, then Save as PDF, makes the print-ready pages ---------- */
+
+@media print {
+  body { background: none; }
+  .bar, .turner, .leaf, .cover { display: none; }
+  .book { font-size: calc(12pt * var(--text-scale)); }
+  .book .leaf-section { break-before: page; }
+  .book .leaf-section:first-child { break-before: auto; }
+  .book :is(.title-page, .part), .book .blank + .piece { break-before: right; }
+  .book .built, .book .bare { page: plain; }
+  .book .built { height: calc(var(--trim-h) * 1in - 1.75in); break-inside: avoid; }
+  .book .opener { padding-top: 1.1in; }
+  .book .blank, .book .page-number, .book .dots { display: none; }
+  .book .half-title + .blank { display: block; height: 1px; break-before: page; page: plain; } /* the back of the half title stays empty */
+  .book mark.tk { background: none; outline: 1px solid; }
+  .book h1, .book h2, .book h3 { break-after: avoid; }
+}

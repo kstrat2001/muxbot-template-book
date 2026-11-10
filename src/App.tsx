@@ -30,16 +30,24 @@ export default function App() {
   document.title = book.title
   return (
     <>
-      <nav className="bar">
-        <strong>{book.title}</strong>
-        {VIEWS.map((view) => (
-          <a key={view.path} href={view.path} aria-current={view.path === path ? 'page' : undefined}>
-            {view.label}
-          </a>
-        ))}
-        <button type="button" onClick={() => window.print()}>
-          Print
-        </button>
+      <nav className="bar" aria-label="Views">
+        <a className="bar-title" href="/">
+          {book.title}
+        </a>
+        <div className="bar-views">
+          {VIEWS.map((view) => (
+            <a key={view.path} href={view.path} aria-current={view.path === path ? 'page' : undefined}>
+              {view.label}
+            </a>
+          ))}
+        </div>
+        <div className="bar-side">
+          {path === '/' && (
+            <button type="button" onClick={() => window.print()}>
+              Print
+            </button>
+          )}
+        </div>
       </nav>
       {page(path)}
     </>

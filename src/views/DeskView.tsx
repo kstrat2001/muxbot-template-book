@@ -1,5 +1,8 @@
 import { book, manuscript } from '../book/load.ts'
+import { chapterNumber, STATUSES, type Piece, type Section } from '../book/parse.ts'
 import { pieceHref } from './BookView.tsx'
+
+const SECTION_NAMES: Record<Section, string> = { front: 'Front matter', chapters: 'Chapters', back: 'Back matter' }
 
 /** The writer's desk: every piece's status, who drafted it, words, open [TK]s, and what needs fixing. */
 export function DeskView() {
@@ -12,17 +15,27 @@ export function DeskView() {
     ...unlisted.map((key) => `manuscript/${key}.md is not listed in book.json, so it is not in the book.`),
     ...pieces.flatMap((piece) => piece.problems.map((problem) => `${piece.key}.md: ${problem}.`)),
   ]
+  const sections = (['front', 'chapters', 'back'] as Section[]).filter((section) => pieces.some((piece) => piece.section === section))
 
   return (
     <main className="desk">
-      <section className="totals">
+      <header className="sheet-head">
+        <p className="caps">The desk</p>
+        <h1>{book.title}</h1>
+        <p className="byline">{book.author}</p>
+      </header>
+      <section className="totals" aria-label="Progress">
         <p>
-          <strong>{words.toLocaleString()}</strong> words{goal > 0 && <> of {goal.toLocaleString()}</>}
+          <strong>{words.toLocaleString()}</strong> {goal > 0 ? `of ${goal.toLocaleString()} words` : 'words'}
         </p>
-        {goal > 0 && <progress max={goal} value={Math.min(words, goal)} />}
-        <p>
+        <p className="open-tks">
           <strong>{tks}</strong> open [TK]
         </p>
+        {goal > 0 && (
+          <div className="goal" role="progressbar" aria-label="Words toward the goal" aria-valuemin={0} aria-valuemax={goal} aria-valuenow={Math.min(words, goal)}>
+            <span style={{ width: `${Math.min(100, (words / goal) * 100)}%` }} />
+          </div>
+        )}
       </section>
       {problems.length > 0 && (
         <ul className="problems">
@@ -34,30 +47,55 @@ export function DeskView() {
       <table>
         <thead>
           <tr>
-            <th>Piece</th>
+            <th colSpan={2}>Piece</th>
             <th>Status</th>
-            <th>Drafted by</th>
+            <th className="wide">Drafted by</th>
             <th className="num">Words</th>
             <th className="num">[TK]</th>
           </tr>
         </thead>
-        <tbody>
-          {pieces.map((piece) => (
-            <tr key={piece.key}>
-              <td>
-                <a href={pieceHref(piece)}>{piece.title}</a>
-                <small>{piece.key}.md</small>
-              </td>
-              <td>
-                <span className={`status ${piece.status}`}>{piece.status}</span>
-              </td>
-              <td>{piece.draftedBy}</td>
-              <td className="num">{piece.words.toLocaleString()}</td>
-              <td className="num">{piece.tks || ''}</td>
+        {sections.map((section) => (
+          <tbody key={section}>
+            <tr>
+              <th colSpan={6} scope="rowgroup">
+                {SECTION_NAMES[section]}
+              </th>
             </tr>
-          ))}
-        </tbody>
+            {pieces
+              .filter((piece) => piece.section === section)
+              .map((piece) => (
+                <tr key={piece.key}>
+                  <td className="chapter-no">{section === 'chapters' ? chapterNumber(pieces, piece) : ''}</td>
+                  <td className="piece-name">
+                    <a href={pieceHref(piece)}>{piece.title}</a>
+                    <small>{piece.key}.md</small>
+                  </td>
+                  <td>
+                    <Status piece={piece} />
+                  </td>
+                  <td className="wide quiet">{piece.draftedBy}</td>
+                  <td className="num">{piece.words.toLocaleString()}</td>
+                  <td className="num">{piece.tks > 0 && <span className="tk-count">{piece.tks}</span>}</td>
+                </tr>
+              ))}
+          </tbody>
+        ))}
       </table>
     </main>
+  )
+}
+
+/** Four dots from idea to final, filled as far as the piece has come, then the word. */
+function Status({ piece }: { piece: Piece }) {
+  const reached = STATUSES.indexOf(piece.status)
+  return (
+    <span className={`status ${piece.status}`}>
+      <span className="steps" aria-hidden="true">
+        {STATUSES.map((status, index) => (
+          <i key={status} className={index <= reached ? 'done' : undefined} />
+        ))}
+      </span>
+      <span className="label">{piece.status}</span>
+    </span>
   )
 }

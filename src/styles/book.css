@@ -1,0 +1,104 @@
+/* The text of the book: paragraphs, chapter openers, the title page and the
+   other pages built from book.json. Shared by the Book view, the Ebook view
+   and print. Sizes are in em, so they follow the page's text size. */
+
+.book { font-family: var(--font-body); line-height: var(--line-height); color: var(--ink); font-variant-numeric: oldstyle-nums; font-kerning: normal; }
+.book a { color: inherit; }
+.book h1, .book h2, .book h3 { font-family: var(--font-display); font-weight: 400; line-height: 1.15; margin: 0; text-wrap: balance; }
+
+/* Paragraphs the way books set them: no space between, first lines indented,
+   except the first after a heading or a break. Justified and hyphenated. */
+.book .text p { margin: 0; text-indent: var(--indent); text-align: justify; hyphens: auto; -webkit-hyphens: auto; text-wrap: pretty; orphans: 2; widows: 2; hanging-punctuation: first; }
+.book .text > p:first-child, .book .text :is(h2, h3, hr, blockquote, figure, ul, ol) + p { text-indent: 0; }
+
+/* A subheading inside a chapter. */
+.book .text h2 { margin: 1.36em 0 0.68em; font-size: 1.1em; font-style: italic; break-after: avoid; }
+.book .text h3 { margin: 1.36em 0 0; font-size: 1em; font-variant-caps: all-small-caps; letter-spacing: 0.08em; break-after: avoid; }
+
+/* A scene break: a line of *** in the Markdown. */
+.book .text hr { border: 0; margin: 1.36em 0; height: 1.36em; text-align: center; break-inside: avoid; break-after: avoid; }
+.book .text hr::after { content: var(--scene-break); color: var(--accent); }
+
+.book .text blockquote { margin: 1.36em 0 1.36em var(--indent); padding: 0; font-size: 0.94em; line-height: 1.447; }
+.book .text blockquote p { text-indent: 0; }
+.book .text blockquote p + p { text-indent: var(--indent); }
+.book .text :is(ul, ol) { margin: 0.68em 0; padding-left: var(--indent); }
+
+.book figure { margin: 1.36em 0; text-align: center; break-inside: avoid; }
+.book figure img, .book .text img { max-width: 100%; height: auto; }
+.book figcaption { margin-top: 0.5em; font-size: 0.85em; font-style: italic; color: var(--ink-soft); }
+
+/* A [TK] placeholder: something still to come. */
+.book mark.tk, .notes mark.tk { background: var(--tk); color: inherit; padding: 0 0.15em; border-radius: 2px; font-style: normal; }
+
+/* ---------- Chapter openers ---------- */
+
+.book .opener { text-align: center; padding-top: 16%; margin-bottom: 2.72em; }
+.book .opener h1 { font-size: 1.7em; letter-spacing: 0.01em; }
+.book .chapter-number { margin: 0 0 0.3em; font-size: 2.6em; line-height: 1; color: var(--accent); }
+.book .opener .ornament { margin-top: 1.1em; }
+
+/* A chapter starts with a large first letter and a first line in small capitals. */
+.book .chapters .text > p:first-child::first-line { font-variant-caps: small-caps; letter-spacing: 0.04em; }
+/* Delete these rules for chapters without the large first letter. */
+.book .chapters .text > p:first-child::first-letter { float: left; font-family: var(--font-display); font-size: 5.1em; line-height: 0.7; padding: 0.08em 0.05em 0 0; font-variant-caps: normal; color: var(--accent); }
+@supports (initial-letter: 3) or (-webkit-initial-letter: 3) {
+  .book .chapters .text > p:first-child::first-letter { float: none; font-size: inherit; line-height: inherit; padding: 0; margin-right: 0.16em; -webkit-initial-letter: 3; initial-letter: 3; }
+}
+
+/* Front and back matter open more quietly: a small-capitals heading. */
+.book :is(.front, .back) .opener { padding-top: 12%; }
+.book :is(.front, .back) .opener h1 { font-size: 1.15em; font-variant-caps: all-small-caps; letter-spacing: 0.14em; }
+.book :is(.front, .back) .opener .ornament { display: none; }
+
+/* A dedication or an epigraph stands alone: no heading, set in italics. */
+.book .bare { position: relative; }
+.book .bare .opener { padding-top: 26%; margin: 0; }
+.book .bare .opener h1 { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.book .bare .text p { text-align: center; text-indent: 0; font-style: italic; hyphens: manual; -webkit-hyphens: manual; }
+
+/* ---------- Pages built from book.json ---------- */
+
+.book .built { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.book .built p { margin: 0; }
+
+.book .half-title h1 { margin-top: 55%; font-size: 1.15em; font-variant-caps: all-small-caps; letter-spacing: 0.16em; }
+
+.book .title-page h1 { margin-top: 34%; font-size: 2.7em; line-height: 1.05; }
+.book .title-page .subtitle { margin-top: 0.7em; font-size: 1.2em; font-style: italic; text-wrap: balance; }
+.book .title-page .ornament { margin-top: 2em; }
+.book .title-page .author { margin-top: 1.7em; font-size: 1.2em; font-variant-caps: all-small-caps; letter-spacing: 0.14em; }
+.book .title-page .imprint { margin-top: auto; font-size: 0.9em; font-variant-caps: all-small-caps; letter-spacing: 0.14em; color: var(--ink-soft); }
+
+.book .part h1 { margin-top: 60%; font-size: 1.5em; font-variant-caps: all-small-caps; letter-spacing: 0.16em; }
+.book .part .ornament { margin-top: 1.4em; }
+
+.book .copyright { justify-content: flex-end; align-items: flex-start; text-align: left; font-size: 0.8em; line-height: 1.4; hyphens: none; }
+.book .copyright p { margin: 0.7em 0 0; max-width: 26em; }
+
+.book .contents { align-items: stretch; text-align: left; }
+.book .contents h1 { margin: 16% 0 2em; text-align: center; font-size: 1.15em; font-variant-caps: all-small-caps; letter-spacing: 0.16em; }
+.book .contents ol { list-style: none; padding: 0; margin: 0; }
+.book .contents li { margin: 0.42em 0; }
+.book .contents li:not(.chapters) { font-style: italic; }
+.book .contents .part-name { display: block; margin: 1.3em 0 0.5em; font-style: normal; font-variant-caps: all-small-caps; letter-spacing: 0.12em; color: var(--ink-soft); }
+.book .contents a { display: flex; align-items: baseline; gap: 0.5em; text-decoration: none; }
+.book .contents a:hover .title { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 0.2em; }
+.book .contents .number { flex: 0 0 1.2em; color: var(--accent); font-style: normal; }
+.book .contents .dots { flex: 1; min-width: 1em; border-bottom: 1px dotted color-mix(in srgb, var(--ink-soft) 55%, transparent); transform: translateY(-0.25em); }
+.book .contents .page-number { font-style: normal; color: var(--ink-soft); }
+
+/* ---------- The Ebook view: the same text, reflowed in one column ---------- */
+
+.book.ebook { min-height: calc(100dvh - var(--bar-h)); background: var(--room); padding: 28px 16px 64px; }
+.book.ebook .reader { max-width: 33em; margin: 0 auto; padding: 1px 2.2em 3em; background: var(--paper); border-radius: 3px; box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 12px 32px -16px rgb(0 0 0 / 0.25); font-size: calc(19px * var(--text-scale)); container-type: inline-size; }
+.book.ebook .leaf-section { padding: 2.5em 0; border-bottom: 1px solid color-mix(in srgb, var(--ink) 12%, transparent); }
+.book.ebook .leaf-section:last-child { border-bottom: 0; }
+.book.ebook .opener, .book.ebook :is(.front, .back, .bare) .opener { padding-top: 1em; }
+.book.ebook .built h1 { margin-top: 1em; }
+.book.ebook .title-page .imprint { margin-top: 3em; }
+.book.ebook .half-title, .book.ebook .blank, .book.ebook .page-number, .book.ebook .dots { display: none; }
+@media (max-width: 520px) {
+  .book.ebook { padding: 0; }
+  .book.ebook .reader { padding: 1px 1.3em 3em; border-radius: 0; box-shadow: none; font-size: calc(18px * var(--text-scale)); }
+}
